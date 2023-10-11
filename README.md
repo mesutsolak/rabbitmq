@@ -6,7 +6,7 @@ https://www.rabbitmq.com/getstarted.html
 ## Özellikleri
 
 <ul>
-  <li>Erlan diliyle geliştirilmiştir.</li>
+  <li>Erlang diliyle geliştirilmiştir.</li>
   <li>Cross Platform desteklenmesinden dolayı farklı işletim sistemlerinde kurulabilir ve kullanılabilir.</li>  
   <li>Cloud ortamda web arayüzü sunarak kullanım kolaylığı sağlamaktadır.</li>
 </ul>
@@ -42,3 +42,38 @@ Queue: Ardından kuyruğa gelen mesajlar Queue'da sıralanır.Queue'de ilk giren
 Consumer: Kuyruktaki mesajları alan kişi/tüketen (Consumes) /uygulama ise Consumer'dır.Consumer yazılım dilinden bağımsız olarak istenilen dille yazılabilen bir uygulamadır.Bunu şöyle örnek vermek gerekirse , bir .net web api uygulaması geliştirip bu servislere java uygulamasında istek atabiliriz.<p>
 
 RabbitMQ gerçekleştirilen tüm süreçte AMQP(Advanced Message Queuing Protocol) protokolünü kullanır ve ilgili protokol üzerinden faaliyetlerini gerçekleştirir.
+
+## Nasıl kurulur ?
+
+RabbitMQ erlang diliyle yazıldığı için öncelikle erlang compiler ve onun ardından RabbitMQ kurmamız gerekmektedir.<br>
+Erlang Compiler : https://www.erlang.org/downloads<br>
+RabbitMQ : https://www.rabbitmq.com/download.html
+
+Setupları kurabilmek için klasik yöntem olan next next yöntemini kullanabiliriz.<br>
+Setupları kurduktan sonra web arayüzünü aktifleştirebilmek için command prompt açarak "cd C:\Program Files\RabbitMQ Server\rabbitmq_server-3.12.6\sbin" seçmemiz gerekir. <br>
+Dosya yolunu seçtikten sonra "rabbitmq-plugins enable rabbitmq_management" diyerek RabbitMQ'yu aktif hale getirebiliriz.RabbitMQ'yu ilk defa aktifleştirdiğimiz için bilgisayarı yeniden başlatmamız gerekebilir.<br>
+
+Web arayüzünü açabilmek için "http://localhost:15672" siteyi açıyoruz.Siteye girebilmek için kullanıcı adı ve parola bilgisine guest yazarak giriş yapabiliriz.Açılan web arayüzdeki sekmelerin anlamları aşağıdaki gibidir : <br>
+
+Connections : RabbitMQ sunucusuna yapılan bağlantıları<br>
+Channels : Kanalları<br>
+Exchanges : Exchangeleri<br>
+Queues : Tüm kuyrukları<br>
+Admin : Sisteme giriş yapan tüm yöneticileri görebiliriz.<p>
+
+## Cloud Ortamda Kurmak (CloudAMQP)
+
+RabbitMQ genellikle kendi sunucularımızda barındırmaktan ziyade RabbitMQ servislerini barındıran CloudAMQP servislerini tercih etmek daha doğru olacaktır.Bu servis üzerinde yapılandırmalarımızı az maliyetli , bakımı kolay , basit , erişimi pratik ve belirli bir limite kadar her türlü mesaj gönderimini ücretsiz yapabiliriz.Devasa ve daha kapsamlı projelerde docker ile ayağa kaldırmamız gerekebilir.
+
+Cloud ortam genellikle;
+
+<ul>
+  <li>Düşük donanım maliyeti</li>
+  <li>Gelişmiş performans</li>
+  <li>Anında güncelleme ve bakım</li>
+  <li>Arttırılmış veri güvenliği</li>
+</ul>
+
+CloudAMQP customer.cloudamqp.com sitesi üzerinden kayıt olabilir ve giriş yapabiliriz.Giriş yapıktan sonra her uygulama için farklı olucak şekilde instance oluşturmamız gerekir.
+
+
