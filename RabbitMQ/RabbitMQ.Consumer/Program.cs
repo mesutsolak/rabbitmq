@@ -6,6 +6,7 @@
 using (IConnection connection = factory.CreateConnection())
 using (IModel channel = connection.CreateModel())
 {
+    #region Simple Queue
 
     //  Consumer her ne kadar tüketici olsa bile publisher'ın tanımladığı şekilde kuyruk tanımlamalıdır.
     channel.QueueDeclare("mesajkuyrugu", false, false, false);
@@ -32,6 +33,9 @@ using (IModel channel = connection.CreateModel())
         Console.WriteLine(Encoding.UTF8.GetString(e.Body.Span));
     };
 
+    #endregion
+
+    #region Secure Queue
 
     channel.QueueDeclare("iskuyrugu", durable: true, false, false, null);
 
@@ -47,7 +51,7 @@ using (IModel channel = connection.CreateModel())
     // 
     EventingBasicConsumer secureConsumer = new(channel);
     channel.BasicConsume("iskuyrugu", false, secureConsumer);
-    consumer.Received += (sender, e) =>
+    secureConsumer.Received += (sender, e) =>
     {
         /*
              Console uygulamaları parametre olarak dışardan args adı altında parametre alabilirler.  
@@ -63,5 +67,113 @@ using (IModel channel = connection.CreateModel())
         channel.BasicAck(e.DeliveryTag, false);
     };
 
+    #endregion
+
+    #region Fanout Exchange
+
+    channel.ExchangeDeclare("iskuyrugu", type: ExchangeType.Fanout);
+
+    // Her Consumer İçin Oluşturulacak Kuyruklara Random İsim Oluşturma
+    var queueName = channel.QueueDeclare().QueueName; //Random isim oluşturuyoruz.
+    channel.QueueBind(queue: queueName, exchange: "iskuyrugu", routingKey: ""); //Oluşturulan Random ismi ilgili exchange'e bind ediyoruz.
+
+    channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
+
+    EventingBasicConsumer fanoutExchangeConsumer = new EventingBasicConsumer(channel);
+    channel.BasicConsume(queueName, false, fanoutExchangeConsumer);
+    fanoutExchangeConsumer.Received += (sender, e) =>
+    {
+        Thread.Sleep(int.Parse(args[0]));
+        Console.WriteLine(Encoding.UTF8.GetString(e.Body.Span) + " alındı");
+        channel.BasicAck(e.DeliveryTag, false);
+    };
+
+    #endregion
+
+    #region Direct Exchange
+
+    channel.ExchangeDeclare("directexchange", type: ExchangeType.Direct);
+
+    string directQueueName = channel.QueueDeclare().QueueName;
+    if (int.Parse(args[0]) == 1)
+        channel.QueueBind(queue: directQueueName, exchange: "directexchange", routingKey: "teksayilar");
+    else
+        channel.QueueBind(queue: directQueueName, exchange: "directexchange", routingKey: "ciftsayilar");
+
+    channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
+
+    EventingBasicConsumer directConsumer = new(channel);
+    channel.BasicConsume(directQueueName, false, directConsumer);
+    directConsumer.Received += (sender, e) =>
+    {
+        Console.WriteLine(Encoding.UTF8.GetString(e.Body.Span) + " sayısı alındı.");
+        channel.BasicAck(e.DeliveryTag, false);
+    };
+
+    #endregion
+
+    #region Topic Exchange
+
+    channel.ExchangeDeclare("topicexchange", type: ExchangeType.Topic);
+
+    var topicQueueName = channel.QueueDeclare().QueueName;
+    var routingKey = "";
+
+    // routing key kurallarını belirtiyoruz. '.' ile kural setlerini belirtiyoruz.
+
+    routingKey = args[0] switch
+    {
+        "1" => $"*.*.Tegmen",
+        "2" => $"*.#.Yuzbasi",
+        "3" => $"#.Binbasi.#",
+        "4" => $"Asker.Subay.Tegmen",
+        _ => throw new NotImplementedException(),
+    };
+
+    channel.QueueBind(queue: topicQueueName, exchange: "topicexchange", routingKey: routingKey);
+
+    channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
+
+    EventingBasicConsumer topicConsumer = new(channel);
+    channel.BasicConsume(topicQueueName, false, topicConsumer);
+    topicConsumer.Received += (sender, e) =>
+    {
+        Console.WriteLine($"{routingKey} {Encoding.UTF8.GetString(e.Body.Span)} görevi aldı.");
+        channel.BasicAck(e.DeliveryTag, false);
+    };
+
+
+    #endregion
+
+    #region Header Exchange
+
+    channel.ExchangeDeclare("headerexchange", type: ExchangeType.Headers);
+
+    //Kuyruk ismi diğer exchange değerlerine göre manuel oluşturulmaktadır.
+
+    channel.QueueDeclare($"kuyruk-{args[0]}", false, false, false, null);
+
+    channel.QueueBind(queue: $"kuyruk-{args[0]}", exchange: "headerexchange", routingKey: string.Empty, new Dictionary<string, object>
+    {
+        /*
+           x-match alanı all veya any değeri almaktadır.İlgili kuyrukta herhangi bir tane başlığın eşleşmesinin yeterli olduğunu 
+           vurgulamak istiyorsan any , hepsinin uymasını istiyorsan o zaman all dememiz gerekmektedir.
+         */
+
+        ["x-match"] = "all",
+        ["no"] = args[0] == "1" ? "123456" : "654321",
+    });
+
+    channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
+
+    EventingBasicConsumer headerConsumer = new(channel);
+    channel.BasicConsume($"kuyruk-{args[0]}", false, headerConsumer);
+    headerConsumer.Received += (sender, e) =>
+    {
+        Console.WriteLine($"{Encoding.UTF8.GetString(e.Body.Span)}. mesaj");
+        channel.BasicAck(e.DeliveryTag, false);
+    };
+
+    #endregion
 }
 Console.Read();

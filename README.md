@@ -34,6 +34,8 @@ Bir uygulama kullanıcıdan gelen istekleri belirli bir sürede cevap veremeyip 
 RabbitMQ'nun işleyiş mantığı aşağıdaki resimde görüldüğü gibidir.
 
 ![RabbitMQ-Nedir](https://github.com/mesutsolak/rabbitmq/assets/56551511/2450a703-5103-4859-8815-c8389c878d60)
+Rabbitmq servislerine gönderilen mesajlar exchange tarafından karşılanmakta ve exchange türüne göre ilgili kuyruğa iletirek ilgili consumerlar tarafından tüketilmektedir.<br>
+Buradaki akışta mesajı yayınlayan (publisher) ve bu yayınlara abone / subscribe olan consumerların olmasından dolayı biz bu süreci Publish / Subscribe (Pub/Sub) pattern olarak ifade edebilmekteyiz. 
 
 Yukarıda görülen öğeleri sırasıyla açıklayalım :<p>
 Publisher: Mesaj kuyruk sistemine mesajı gönderen ya da başka bir deyişle mesajı üreten uygulamadır / kişidir.Publisher mesajı ürettikten sonra publish edecektir ve Exchange karşılayacaktır.<p>
@@ -80,6 +82,45 @@ CloudAMQP customer.cloudamqp.com sitesi üzerinden kayıt olabilir ve giriş yap
 Bir kuyruk sistemini akıllı hale getirmek demek genellikle performansı arttırmak , kaynak kullanımını optimize etmek , hata toleransını sağlamak ve verimliliğini arttırmak anlamına gelir.
 
 
-1.Elde ettiği mesajları güvenli / dayanıklı bir şekilde tutmak
-2.Eşit bir dağılımla tüketilmesi 
-3.Sunucuya mesajlar iletildiğine dair haberdar edilmesi
+1.Elde ettiği mesajları güvenli / dayanıklı bir şekilde tutmak<br>
+2.Eşit bir dağılımla tüketilmesi <br>
+3.Sunucuya mesajlar iletildiğine dair haberdar edilmesi<p>
+
+## Exchange ve Türleri
+
+Bir rabbitmq kendisine gönderilen mesajları direk oluşturulan kuyruklara eklemekte ve consumerlar oluşturulan bu mesajları sırasıyla tükemektedir.Süreçlar bu şekilde ilerleyebilirken birden fazla consumerın olduğu durumlarda mesajın nasıl tüketileceği ve hangi consumerın ne kadar mesaj işleyeceği bildirmemiz gerekmektedir.Böyle bir durumda devreye exchangeler girmektedir.Exchangelerin türleri vardır ve her exchange farklı bir değere ve anlama sahiptir.Gönderilen mesajlar exchange türüne göre consumerlara gönderilerek
+işlenmektedir.
+
+Cloud ortamdaki exchangelere erişmek için hornet.rmq.cloudamqp.com url adresini kullanabiliriz.
+
+### Fanout Exchange
+
+Fanout exchange kural gözetmeksizin aldığı mesajı tüm kuyruklara ileterek ilgili consumerlar tarafından tüketilmektedir.Fanout exchange hangi durumlarda tercih edilebilir ?
+
+<ul>
+  <li>Güncel skorların tüm oyunculara bildirilmesi</li>
+  <li>Hava durumu bilgisinin tüm kanallara iletilmesi</li>
+  <li>Tüm birimlere %5'lik zam yapılması</li>
+</ul>
+
+Yani kısaca genel bir işlem söz konusu ise fanout exchange kullanılmaktadır.
+
+### Direct Exchange
+
+Direct Exchange , ilgili mesajı verilen route anahtarına göre ilgili kuyruğa iletmektedir. <br>
+Örnek olarak: Tek sayılar ve çift sayıların farklı kuyruklara gönderilmesi gibi.
+
+### Topic Exchange
+
+Topic Exchange ,  mesajı verilen route anahtarının formatına göre ilgili kuyruğa iletmektedir.Zorunlu olarak bir format belirlememize gerek yoktur.<p>
+
+‘usa.news’ -> routing key değeri ‘usa.news’ olan mesajlar bu kuyruğa girecektir. <br>
+‘*.weather’ -> ‘*<önemli değil>.weather’ olan mesajlar bu kuyruğa girecektir.<br>
+‘#.news’ -> ‘#<başı önemli değil>.news’ olan mesajlar bu kuyruğa girecektir.<br>
+‘usa.#’ -> ‘usa.#<sonu önemli değil>’ olan mesajlar bu kuyruğa girecektir. <br>
+‘europe.*’ -> ‘europe.*<önemli değil>’ olan mesajlar bu kuyruğa girecektir. <br>
+‘#’ -> ‘#< hiçbiri önemli değil>’ olan mesajlar bu kuyruğa girecektir. 
+
+### Header Exchange
+
+Topic Exchange ile aynı mantıkda çalışmaktadır farkı ise birisi routingkey ile belirlerken bir tanesi header üzrinden hangi kuyruğa gideceğini belirtmektedir.

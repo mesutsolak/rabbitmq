@@ -8,6 +8,8 @@
 using (IConnection connection = factory.CreateConnection()) //  Bağlantı sağlanmakta
 using (IModel channel = connection.CreateModel()) // Kanal oluşturma
 {
+    #region Simple Queue
+
     /*
         QueueDeclare metodunu ve parametlerini açıklayalım.
         QueueDeclare metodu kuyruk oluşturmaya yaramaktadır.
@@ -30,6 +32,10 @@ using (IModel channel = connection.CreateModel()) // Kanal oluşturma
      */
 
     channel.BasicPublish(exchange: "", routingKey: "mesajkuyrugu", body: bytemessage);
+
+    #endregion
+
+    #region Secure Queue
 
     // durable true dediğimiz zaman kuyruğumuz fiziksel olarak disk üzerinde saklanır ve RabbitMQ sunucusunun yeniden başlatılması durumunda dahi kuyruk korunur.
 
@@ -54,5 +60,79 @@ using (IModel channel = connection.CreateModel()) // Kanal oluşturma
         channel.BasicPublish(exchange: "", routingKey: "iskuyrugu", basicProperties: properties, body: secureMessage);
     }
 
+    #endregion
+
+    #region Fanout Exchange 
+
+    /*
+     * Artık bir exchange kullanıldığı için publisher tarafında bir kuyruk oluşturmak yerine exchange oluşturmalı ve mesajlar exchange tarafından gitmelidir.
+     * Exchange ürettikten sonra kuyruk oluşturmuyoruz.Bunun nedeni exchange üretildikten sonra exchange'e bağlanmak isteyen bir consumer için farklı kuyruk oluşturulacaktır.
+     * Yani kısaca bir exchange 5 tane consumer bağlanacaksa 5 consumer için farklı kuyruklar oluşturulacaktır.
+     */
+    channel.ExchangeDeclare("iskuyrugu", type: ExchangeType.Fanout);
+    for (int i = 1; i <= 100; i++)
+    {
+        byte[] fanoutExchangeMessage = Encoding.UTF8.GetBytes($"is - {i}");
+
+        IBasicProperties properties = channel.CreateBasicProperties();
+        properties.Persistent = true;
+
+        channel.BasicPublish(exchange: "iskuyrugu", routingKey: "", basicProperties: properties, body: fanoutExchangeMessage);
+    }
+
+    #endregion
+
+    #region Direct Exchange
+
+    channel.ExchangeDeclare("directexchange", type: ExchangeType.Direct);
+    for (int i = 1; i <= 100; i++)
+    {
+        byte[] directExchangeMessage = Encoding.UTF8.GetBytes($"sayı - {i}");
+
+        IBasicProperties properties = channel.CreateBasicProperties();
+        properties.Persistent = true;
+
+        // routingKey ile anahtar belirtiyoruz.
+
+        if (i % 2 != 0)
+            channel.BasicPublish(exchange: "directexchange", routingKey: "ciftsayilar", basicProperties: properties, body: directExchangeMessage);
+        else
+            channel.BasicPublish(exchange: "directexchange", routingKey: "teksayilar", basicProperties: properties, body: directExchangeMessage);
+    }
+
+    #endregion
+
+    #region Topic Exchange
+
+    channel.ExchangeDeclare("topicexchange", type: ExchangeType.Topic);
+    for (int i = 1; i <= 100; i++)
+    {
+        byte[] topicMessage = Encoding.UTF8.GetBytes($"{i}. görev verildi.");
+
+        IBasicProperties properties = channel.CreateBasicProperties();
+        properties.Persistent = true;
+        channel.BasicPublish(exchange: "topicexchange", routingKey: $"Asker.Subay.{(i % 2 == 0 ? "Yuzbasi" : (i % 11 == 0 ? "Binbasi" : "Tegmen"))}", basicProperties: properties, body: topicMessage);
+    }
+
+    #endregion
+
+    #region Header Exchange
+
+    channel.ExchangeDeclare("headerexchange", type: ExchangeType.Headers);
+    for (int i = 1; i <= 100; i++)
+    {
+        byte[] headerMessage = Encoding.UTF8.GetBytes($"{i}. mesaj");
+
+        IBasicProperties properties = channel.CreateBasicProperties();
+        properties.Persistent = true;
+        properties.Headers = new Dictionary<string, object>()
+        {
+            ["no"] = args[0] == "1" ? "123456" : "654321"
+        };
+
+        channel.BasicPublish(exchange: "headerexchange", routingKey: string.Empty, basicProperties: properties, body: headerMessage);
+    }
+
+    #endregion
 }
 
