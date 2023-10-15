@@ -31,4 +31,28 @@ using (IModel channel = connection.CreateModel()) // Kanal oluşturma
 
     channel.BasicPublish(exchange: "", routingKey: "mesajkuyrugu", body: bytemessage);
 
+    // durable true dediğimiz zaman kuyruğumuz fiziksel olarak disk üzerinde saklanır ve RabbitMQ sunucusunun yeniden başlatılması durumunda dahi kuyruk korunur.
+
+    channel.QueueDeclare("iskuyrugu", durable: true, false, false, null);
+
+    // Publisher ayağa her kalktığında 100 adet mesaj kuyruğa iletmektedir.
+
+    for (int i = 1; i <= 100; i++)
+    {
+        byte[] secureMessage = Encoding.UTF8.GetBytes($"is - {i}");
+
+        IBasicProperties properties = channel.CreateBasicProperties();
+        properties.Persistent = true;
+
+        /*
+         * Durable mantığıyla mantık olarak benzemektedir.Persintent fiziksel olarak mesajları disk üzerinde saklamaktadır.Yeniden başlatılması durumunda kaybolmaz.
+         * Mesajların disk güvenliği sağlaması durumda performansı bir miktar etkileyebileceğini unutmamak gerekir.
+         * Çünkü mesajlar disk üzerinde depolanacağı için bellek kullanımı ve performans açısından ek yük getirebilir. 
+         * Bu nedenle, uygulama gereksinimlerinize göre dengeli bir yaklaşım benimsemek önemlidir.
+         * 
+        */
+        channel.BasicPublish(exchange: "", routingKey: "iskuyrugu", basicProperties: properties, body: secureMessage);
+    }
+
 }
+

@@ -75,3 +75,11 @@ Cloud ortam genellikle;
 </ul>
 
 CloudAMQP customer.cloudamqp.com sitesi üzerinden kayıt olabilir ve giriş yapabiliriz.Giriş yapıktan sonra her uygulama için farklı olucak şekilde instance oluşturmamız gerekir.
+
+## Akıllı Kuyruk Sistemi nedir ?
+Bir kuyruk sistemini akıllı hale getirmek demek genellikle performansı arttırmak , kaynak kullanımını optimize etmek , hata toleransını sağlamak ve verimliliğini arttırmak anlamına gelir.
+
+
+1.Elde ettiği mesajları güvenli / dayanıklı bir şekilde tutmak
+2.Eşit bir dağılımla tüketilmesi 
+3.Sunucuya mesajlar iletildiğine dair haberdar edilmesi
