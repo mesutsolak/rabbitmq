@@ -23,6 +23,10 @@ using (IModel channel = connection.CreateModel()) // Kanal oluşturma
 
     channel.QueueDeclare("mesajkuyrugu", false, false, false);
 
+    /* 
+     *  GetBytes string bir değer aldığı için bir dizi ya da sınıf gönderme işleminde JsonConvert.SerializeObject kullanmalıyız.
+    */
+
     byte[] bytemessage = Encoding.UTF8.GetBytes("sebepsiz boş yere ayrılacaksan");
 
     /*

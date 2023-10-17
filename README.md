@@ -1,27 +1,30 @@
 # RabbitMQ
-Open Source bir mesaj kuyruk sistemidir.Bundan dolayı oldukça ün ve yaygınlık kazanmıştır.<br>
-Çok iyi bir dokümantasyonu mevcuttur.<br>
-https://www.rabbitmq.com/getstarted.html
-
-## Özellikleri
+Bir mesaj kuyruk sistemidir.Bundan dolayı oldukça ün ve yaygınlık kazanmıştır.Yapılacak asenkron işlemleri sıraya koyup , bunları sırayla kuyruktan çekip işleyen ölçeklenebilir ve performanslı bir sistemdir.
+RabbitMQ, AMQP protokolü üzerine kurulmuş bir message queue yapısıdır. Ancak MQTT ya da STOMP gibi protokolleri de desteklemektedir.<br>
+<br>
 
 <ul>
   <li>Erlang diliyle geliştirilmiştir.</li>
+  <li>Bir çok yazılım diline destek vermektedir.</li>
   <li>Cross Platform desteklenmesinden dolayı farklı işletim sistemlerinde kurulabilir ve kullanılabilir.</li>  
   <li>Cloud ortamda web arayüzü sunarak kullanım kolaylığı sağlamaktadır.</li>
+  <li>Çok iyi bir dokümantasyonu mevcuttur | https://www.rabbitmq.com/getstarted.html - https://github.com/rabbitmq</li>
+  <li>Open source bir sistemdir.</li>
 </ul>
 
 ## Mesaj kuyruk sistemi nedir ?
-Bir uygulamadan bir mesajı alıp bir başka uygulamaya sırası geldiğinde ileten sistemdir.
+Bir uygulamadan bir mesajı alıp bir başka uygulamaya sırası geldiğinde ileten sistemdir.Geliştiriyor olduğumuz uygulamaların birbirleri arasında sürekli bir bağlantıya ihtiyaç duymadan dağıtık ve ölçeklenebilir sistemler inşa etmemize yarayan yapılardır.Mesajlar, işlenene ve silinene kadar kuyrukta saklanır ve her mesaj, sadece bir tüketici tarafından yalnızca bir kez işlenir.<p>
 Örnek olarak bir kargo firmasını düşünebiliriz.Bir kargo firmasına bir ürün satıcı tarafından iletilir.Bu kargo zamanı geldiğinde alıcıya teslim edilir.
 Bu örnekte olduğu gibi RabbitMQ'da böyle çalışmaktadır.Kendisine verilen mesajı doğru zamanda ilgili tüketiciye göndermektedir.
 
 ## Message broker nedir ?
-Mesaj kuyruk sistemlerine verilen genel bir isimdir.RabbitMQ ise sadece bunlardan biridir.Kafka , MSMQ vs. diğer mesaj kuyruk sistemlerindendir.
+Mesaj kuyruk sistemlerine verilen genel bir isimdir.RabbitMQ ise sadece bunlardan biridir.Kafka , MSMQ , Azure Service Bus vs. diğer mesaj kuyruk sistemlerindendir.
 
 ## Mesaj kuyruk sistemi ile Message broker arasındaki fark nedir ?
 
 Message broker, mesajları kaynaktan alıp birden fazla hedefe ileten aracı bir sistemdir, mesaj kuyruk sistemi ise mesajları sırayla işleyen ve doğrudan hedeflere ileten bir yapıdır.
+
+
 
 ## Neden kullanmalıyız ?
 
@@ -38,12 +41,20 @@ Rabbitmq servislerine gönderilen mesajlar exchange tarafından karşılanmakta 
 Buradaki akışta mesajı yayınlayan (publisher) ve bu yayınlara abone / subscribe olan consumerların olmasından dolayı biz bu süreci Publish / Subscribe (Pub/Sub) pattern olarak ifade edebilmekteyiz. 
 
 Yukarıda görülen öğeleri sırasıyla açıklayalım :<p>
-Publisher: Mesaj kuyruk sistemine mesajı gönderen ya da başka bir deyişle mesajı üreten uygulamadır / kişidir.Publisher mesajı ürettikten sonra publish edecektir ve Exchange karşılayacaktır.<p>
+Publisher: Mesaj kuyruk sistemine mesajı gönderen ya da başka bir deyişle mesajı üreten uygulamadır / kişidir.Publisher mesajı ürettikten sonra publish edecektir , exchange karşılayacaktır ve exchange'i tanımaktadır.<p>
 Exchange: Kendisine belirtilen route ile ilgili mesajı kuyruğa yönlendirir.İlgili mesajın nasıl kuyruğa gideceği Exchange içerisindeki routedan öğrenilir.Basit bir mesaj gönderme işleminde kullanılmasına gerek olmayan bir yapıdır.Exchange belirtmeden mesajları kuyruğa direk olarak gönderirsek default exchange kullanmış oluruz. <p>
-Queue: Ardından kuyruğa gelen mesajlar Queue'da sıralanır.Queue'de ilk giren ilk çıkar mantığı bulunmaktadır.Buna First in First Out (FIFO) olarak adlandırabiliriz. Bir mesaj kuyruk sistemine ilk giren ilk çıkacaktır.İlk giren ilk işlenir.<p>
-Consumer: Kuyruktaki mesajları alan kişi/tüketen (Consumes) /uygulama ise Consumer'dır.Consumer yazılım dilinden bağımsız olarak istenilen dille yazılabilen bir uygulamadır.Bunu şöyle örnek vermek gerekirse , bir .net web api uygulaması geliştirip bu servislere java uygulamasında istek atabiliriz.<p>
+Queue: Ardından kuyruğa gelen mesajlar Queue'da sıralanır.Queue'de ilk giren ilk çıkar mantığı bulunmaktadır.Buna First in First Out (FIFO) olarak adlandırabiliriz. Bir mesaj kuyruk sistemine ilk giren ilk çıkacaktır.İlk giren ilk işlenir.Görevi consumerlara verileri teker teker göndermektedir.Bazı yerlerde isim olarak Producer olarak da kullanılabilir.<p>
+Channels: Publish ve Consumes kısımlarına channel denir.
+Consumer: Kuyruktaki mesajları alan kişi/tüketen (Consumes) /uygulama ise Consumer'dır.Consumer yazılım dilinden bağımsız olarak istenilen dille yazılabilen bir uygulamadır.Bunu şöyle örnek vermek gerekirse , bir .net web api uygulaması geliştirip bu servislere java uygulamasında istek atabiliriz.Bazı yerlerde isim olarka consumer yerine receiver ve subscriber olarak da kullanılabilir.Consumerlar exchangeleri tanımazlar, kuyrukları tanırlar ve mutlaka bir kuyruğa bağlanırlar. Kuyruğu dinleyen birden fazla consumer da olabilir.
+<p>
+Binding Key: Binding key, bir queue’yu exchange’e bağlamak için oluşturulan bir “link”tir. </p>
 
 RabbitMQ gerçekleştirilen tüm süreçte AMQP(Advanced Message Queuing Protocol) protokolünü kullanır ve ilgili protokol üzerinden faaliyetlerini gerçekleştirir.
+
+## AMQP(Advanced Messaging Queue Protocol) nedir?
+
+Gelişmiş bir mesajlaşma protokolüdür. Amacı Platform bağımsız olarak iki taraf arasında uygulamalarımızın güvenli bir şekilde Queue yapısını kullanarak haberleşmesini sağlamaktadır.
+Göndereceği mesajlarda “header, properties ve message” alanlarına sahiptir.
 
 ## Nasıl kurulur ?
 
@@ -81,7 +92,6 @@ CloudAMQP customer.cloudamqp.com sitesi üzerinden kayıt olabilir ve giriş yap
 ## Akıllı Kuyruk Sistemi nedir ?
 Bir kuyruk sistemini akıllı hale getirmek demek genellikle performansı arttırmak , kaynak kullanımını optimize etmek , hata toleransını sağlamak ve verimliliğini arttırmak anlamına gelir.
 
-
 1.Elde ettiği mesajları güvenli / dayanıklı bir şekilde tutmak<br>
 2.Eşit bir dağılımla tüketilmesi <br>
 3.Sunucuya mesajlar iletildiğine dair haberdar edilmesi<p>
@@ -110,9 +120,11 @@ Yani kısaca genel bir işlem söz konusu ise fanout exchange kullanılmaktadır
 Direct Exchange , ilgili mesajı verilen route anahtarına göre ilgili kuyruğa iletmektedir. <br>
 Örnek olarak: Tek sayılar ve çift sayıların farklı kuyruklara gönderilmesi gibi.
 
+NOT : Kod tarafında basic publish kullanılırken exchange tipi belirtilmez default olarak direct exchange kullanılır.
+
 ### Topic Exchange
 
-Topic Exchange ,  mesajı verilen route anahtarının formatına göre ilgili kuyruğa iletmektedir.Zorunlu olarak bir format belirlememize gerek yoktur.<p>
+Topic Exchange ,  mesajı verilen route anahtarının formatına göre ilgili kuyruğa iletmektedir.Zorunlu olarak bir format belirlememize gerek yoktur.Kendisine göre willcard desteği bulunur.<p>
 
 ‘usa.news’ -> routing key değeri ‘usa.news’ olan mesajlar bu kuyruğa girecektir. <br>
 ‘*.weather’ -> ‘*<önemli değil>.weather’ olan mesajlar bu kuyruğa girecektir.<br>

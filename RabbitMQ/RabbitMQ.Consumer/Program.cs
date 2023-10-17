@@ -17,7 +17,9 @@ using (IModel channel = connection.CreateModel())
     /*
      * Basic Consume ile mesajları tüketiyoruz.Parametreleri tanımlayalım.
        queue : Kuyruk ismi
-       autoAck :Kuruktan alınan mesajın silinip silinmemesini sağlıyor.Silinmesi pek önerilmiyor.
+       autoAck / autoAcknowledge: Kuyruktan alınan mesajın silinip silinmemesini sağlıyor.Silinmesi pek önerilmiyor bunun yerine
+       ilgili işlem tamamlandıktan sonra kendi kontrolümüzde silinmesini öneriliyor.
+       
        consumer : Tüketici
     */
     channel.BasicConsume("mesajkuyrugu", false, consumer);
@@ -61,6 +63,9 @@ using (IModel channel = connection.CreateModel())
              diyerek consume işleminin ne kadar süreyle bir olacağını belirtmiş oluyoruz.
          */
         Thread.Sleep(int.Parse(args[0]));
+
+        // Bir deSerialize işlemi yapılacaksa e.body.toArray() denilecek sonrasnda JsonConvert.DeSerialize() kullanılacaktır.
+
         Console.WriteLine(Encoding.UTF8.GetString(e.Body.Span) + " alındı");
 
         // Sunucuya haber vermek için kuyruktaki mesaj alındıktan sonra silinmek için kullanılan mesajdır.
