@@ -13,7 +13,7 @@ RabbitMQ, AMQP protokolü üzerine kurulmuş bir message queue yapısıdır. Anc
 </ul>
 
 ## Mesaj kuyruk sistemi nedir ?
-Bir uygulamadan bir mesajı alıp bir başka uygulamaya sırası geldiğinde ileten sistemdir.Geliştiriyor olduğumuz uygulamaların birbirleri arasında sürekli bir bağlantıya ihtiyaç duymadan dağıtık ve ölçeklenebilir sistemler inşa etmemize yarayan yapılardır.Mesajlar, işlenene ve silinene kadar kuyrukta saklanır ve her mesaj, sadece bir tüketici tarafından yalnızca bir kez işlenir.<p>
+Bir uygulamadan bir mesajı alıp bir başka uygulamaya sırası geldiğinde ileten sistemdir.Geliştiriyor olduğumuz uygulamaların birbirleri arasında sürekli bir bağlantıya ihtiyaç duymadan dağıtık ve ölçeklenebilir sistemler inşa etmemize yarayan yapılardır.Mesajlar, işlenene ve silinene kadar kuyrukta saklanır ve her mesaj, sadece bir tüketici tarafından yalnızca bir kez işlenir.Mesajlar saklandığı için sunucuda problem yaşandığında veriler kaybolmayacak , sunucu tekrar aktif olduğunda mesajlar iletilecektir.Böylelikle verinin kalıcılığı arttırılmış olur.<p>
 Örnek olarak bir kargo firmasını düşünebiliriz.Bir kargo firmasına bir ürün satıcı tarafından iletilir.Bu kargo zamanı geldiğinde alıcıya teslim edilir.
 Bu örnekte olduğu gibi RabbitMQ'da böyle çalışmaktadır.Kendisine verilen mesajı doğru zamanda ilgili tüketiciye göndermektedir.
 
