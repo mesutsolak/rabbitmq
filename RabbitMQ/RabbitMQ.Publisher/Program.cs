@@ -5,8 +5,8 @@
 //factory.HostName = "localhost"; Localhosta bağlanmak yerine cloud bir ortama bağlanmaktayız.
 
 
-using (IConnection connection = factory.CreateConnection()) //  Bağlantı sağlanmakta
-using (IModel channel = connection.CreateModel()) // Kanal oluşturma
+using (IConnection connection = await factory.CreateConnectionAsync()) //  Bağlantı sağlanmakta
+using (IChannel channel = await connection.CreateChannelAsync()) // Kanal oluşturma
 {
     #region Simple Queue
 
