@@ -1,8 +1,8 @@
 ﻿namespace RabbitMQ.Core.Models;
 
-public sealed record PublishRequest<T> where T : IPayload
+public sealed record PublishRequest<T>(T value) where T : IPayload
 {
-    public T Payload { get; init; } = default!;
+    public T Payload { get; init; } = value;
     public QueueModel Queue { get; init; } = default!;
     public ExchangeModel Exchange { get; init; } = default!;
 }

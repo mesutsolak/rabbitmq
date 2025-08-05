@@ -1,6 +1,6 @@
 ﻿namespace RabbitMQ.Core.Services;
 
-public class RabbitMqConnectionService(IOptions<RabbitMqSettings> rabbitMqSettings)
+public sealed class RabbitMqConnectionService(IOptions<RabbitMqSettings> rabbitMqSettings)
 {
     public IModel CreateChannel()
     {
@@ -8,7 +8,14 @@ public class RabbitMqConnectionService(IOptions<RabbitMqSettings> rabbitMqSettin
         {
             HostName = rabbitMqSettings.Value.HostName,
             UserName = rabbitMqSettings.Value.Username,
-            Password = rabbitMqSettings.Value.Password
+            Password = rabbitMqSettings.Value.Password,
+            Port = rabbitMqSettings.Value.Port,
+            VirtualHost = rabbitMqSettings.Value.Username,
+            Ssl = new SslOption
+            {
+                Enabled = rabbitMqSettings.Value.Ssl,
+                ServerName = rabbitMqSettings.Value.HostName
+            }
         };
 
         var connection = factory.CreateConnection();

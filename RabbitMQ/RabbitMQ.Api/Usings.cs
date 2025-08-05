@@ -1,0 +1,5 @@
+﻿global using MediatR;
+global using Microsoft.AspNetCore.Mvc;
+global using RabbitMQ.Business.Extensions;
+global using RabbitMQ.Business.Products.Add;
+global using RabbitMQ.Core.Extensions;
