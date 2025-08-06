@@ -21,5 +21,5 @@ public sealed record ExchangeModel
     public string? Type { get; init; }
     public string RoutingKey { get; init; } = string.Empty;
     public bool Persistence { get; init; }
-    public Dictionary<string, object>? Headers { get; set; }
+    public Dictionary<string, object>? Headers { get; init; }
 }
