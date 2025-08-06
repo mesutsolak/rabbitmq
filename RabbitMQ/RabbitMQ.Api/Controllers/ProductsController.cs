@@ -11,4 +11,12 @@ public sealed class ProductsController(IMediator mediator) : CustomBaseControlle
 
         return Ok();
     }
+
+    [HttpPut]
+    public async Task<IActionResult> Update(UpdateProductCommand command)
+    {
+        await _mediator.Send(command);
+
+        return Ok();
+    }
 }

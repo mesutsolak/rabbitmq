@@ -13,6 +13,7 @@ public sealed class AddProductCommandHandler(IRabbitMqService service) : IReques
         return await Task.FromResult(Unit.Value);
     }
 
+    // Simple Queue
     private static PublishRequest<AddProductEvent> PrepareRequest(AddProductCommand command)
     {
         var @event = new AddProductEvent

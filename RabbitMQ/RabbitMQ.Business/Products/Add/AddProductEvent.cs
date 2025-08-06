@@ -1,6 +1,4 @@
-﻿using RabbitMQ.Core.Models;
-
-namespace RabbitMQ.Business.Products.Models;
+﻿namespace RabbitMQ.Business.Products.Add;
 
 public class AddProductEvent : IPayload
 {
