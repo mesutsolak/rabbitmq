@@ -1,8 +1,8 @@
 ﻿namespace RabbitMQ.Business.Products.Update;
 
-public class UpdateProductEvent : IPayload
+public sealed record UpdateProductEvent : IPayload
 {
-    public int Id { get; set; }
-
-    public required string Name { get; set; }
+    public int Id { get; init; }
+    public required string Name { get; init; }
+    public required int Stock { get; init; }
 }

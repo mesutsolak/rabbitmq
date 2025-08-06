@@ -1,6 +1,7 @@
 ﻿namespace RabbitMQ.Business.Products.Add;
 
-public class AddProductEvent : IPayload
+public sealed record AddProductEvent : IPayload
 {
-    public required string Name { get; set; }
+    public required string Name { get; init; }
+    public required int Stock { get; init; }
 }

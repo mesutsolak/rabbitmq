@@ -19,6 +19,7 @@ public sealed class AddProductCommandHandler(IRabbitMqService service) : IReques
         var @event = new AddProductEvent
         {
             Name = command.Name,
+            Stock = command.Stock,
         };
 
         return new PublishRequest<AddProductEvent>(@event)

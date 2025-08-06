@@ -20,6 +20,7 @@ public sealed class UpdateProductCommandHandler(IRabbitMqService service) : IReq
         {
             Name = command.Name,
             Id = command.Id,
+            Stock = command.Stock,
         };
 
         return new PublishRequest<UpdateProductEvent>(@event)

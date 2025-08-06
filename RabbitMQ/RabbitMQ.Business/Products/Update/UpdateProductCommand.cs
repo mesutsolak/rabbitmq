@@ -1,7 +1,8 @@
 ﻿namespace RabbitMQ.Business.Products.Update;
 
-public sealed class UpdateProductCommand : IRequest<Unit>
+public sealed record UpdateProductCommand : IRequest<Unit>
 {
-    public int Id { get; set; }
-    public required string Name { get; set; }
+    public int Id { get; init; }
+    public required string Name { get; init; }
+    public required int Stock { get; init; }
 }

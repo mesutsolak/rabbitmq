@@ -1,6 +1,7 @@
 ﻿namespace RabbitMQ.Business.Products.Add;
 
-public sealed class AddProductCommand : IRequest<Unit>
+public sealed record AddProductCommand : IRequest<Unit>
 {
-    public required string Name { get; set; }
+    public required string Name { get; init; }
+    public required int Stock { get; init; }
 }
