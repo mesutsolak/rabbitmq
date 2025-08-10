@@ -1,6 +1,4 @@
-﻿using RabbitMQ.Business.Products.Delete;
-
-namespace RabbitMQ.Api.Controllers;
+﻿namespace RabbitMQ.Api.Controllers;
 
 public sealed class ProductsController(IMediator mediator) : CustomBaseController
 {
@@ -32,6 +30,22 @@ public sealed class ProductsController(IMediator mediator) : CustomBaseControlle
 
     [HttpDelete]
     public async Task<IActionResult> Delete(DeleteProductCommand command)
+    {
+        await _mediator.Send(command);
+
+        return Ok();
+    }
+
+    [HttpDelete("CustomDelete")]
+    public async Task<IActionResult> CustomDelete(CustomDeleteCommand command)
+    {
+        await _mediator.Send(command);
+
+        return Ok();
+    }
+
+    [HttpPut("CustomUpdate")]
+    public async Task<IActionResult> CustomUpdate(CustomUpdateCommand command)
     {
         await _mediator.Send(command);
 

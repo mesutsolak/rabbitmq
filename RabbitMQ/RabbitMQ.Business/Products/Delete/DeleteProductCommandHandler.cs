@@ -25,7 +25,8 @@ public sealed class DeleteProductCommandHandler(IRabbitMqService service) : IReq
         {
             Exchange = new()
             {
-                Name = "delete-product-stock",
+                Name = "delete-product-exchange",
+                RoutingKey = "delete-product",
                 Type = ExchangeType.Direct,
                 Persistence = true
             }
